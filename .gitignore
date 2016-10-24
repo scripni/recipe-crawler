@@ -1,4 +1,4 @@
 *.lock.json
 
-/bin
-/obj
+bin/
+obj/
