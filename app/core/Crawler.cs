@@ -15,7 +15,9 @@ namespace RecipeCrawler.Core
 
             using (var response = await client.GetAsync("robots.txt"))
             {
-                Console.WriteLine("Got response");
+                response.EnsureSuccessStatusCode();
+                string content = await response.Content.ReadAsStringAsync();
+                Console.WriteLine(content);
             }
         }
     }
