@@ -1,4 +1,5 @@
 ﻿using System;
+using RecipeCrawler.Core;
 
 namespace RecipeCrawler
 {
@@ -7,6 +8,8 @@ namespace RecipeCrawler
         public static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
+            Crawler crawler = new Crawler();
+            crawler.Crawl().Wait();
         }
     }
 }
