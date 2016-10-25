@@ -1,3 +1,4 @@
+using System;
 using RecipeCrawler.Core;
 using Xunit;
 
@@ -11,7 +12,7 @@ namespace RecipeCrawler.Tests
             // arrange
             // act
             // assert
-            new Crawler();
+            new Crawler(new Uri("http://0.0.0.0"));
         }
     }
 }
