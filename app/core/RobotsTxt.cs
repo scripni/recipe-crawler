@@ -14,7 +14,12 @@ namespace RecipeCrawler.Core
                 v => new Uri(
                     new Uri($"https://{host.Host}/", UriKind.Absolute),
                     new Uri(v, UriKind.Relative))));
+            string sitemap = values["SiteMap"].First();
+            Console.WriteLine(sitemap);
+            SiteMapUri = new Uri(sitemap);
         }
+
+        public Uri SiteMapUri { get; }
 
         private HashSet<Uri> Disallowed { get; } = new HashSet<Uri>();
 
@@ -51,11 +56,9 @@ namespace RecipeCrawler.Core
                 StringSplitOptions.RemoveEmptyEntries))
             {
                 // read line as key/value pair
-                string[] pair = line.Split(
-                    new[] { ":" },
-                    StringSplitOptions.None);
-                string key = pair[0].Trim();
-                string value = pair[1]?.Trim() ?? string.Empty;
+                int semicolon = line.IndexOf(":");
+                string key = line.Substring(0, semicolon);
+                string value = line.Substring(semicolon + 2, line.Length - semicolon - 2).Trim() ?? string.Empty;
 
                 // for user-agent update filtering and skip adding to values
                 if (key.Equals("user-agent", StringComparison.OrdinalIgnoreCase))
@@ -75,7 +78,7 @@ namespace RecipeCrawler.Core
                 }
 
                 // check if entry should be ignored
-                if (ignoreEntries)
+                if (ignoreEntries && !key.Equals("sitemap", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -85,12 +88,8 @@ namespace RecipeCrawler.Core
                 {
                     values.Add(key, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
                 }
-                values[key].Add(value);
-            }
 
-            foreach(var value in values)
-            {
-                Console.WriteLine($"{value.Key}: Count:{value.Value.Count}");
+                values[key].Add(value);
             }
 
             return values;

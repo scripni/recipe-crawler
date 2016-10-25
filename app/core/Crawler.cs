@@ -19,17 +19,19 @@ namespace RecipeCrawler.Core
 
         HttpClient Client { get; }
 
+        RobotsTxt RobotsTxt { get; set; }
+
         public async Task Crawl()
         {
+            string siteMap = await ReadResponseAsync(RobotsTxt.SiteMapUri.AbsolutePath);
+            Console.WriteLine(siteMap);
         }
 
         public async Task LoadRobotsTxt()
         {
-            RobotsTxt rt = new RobotsTxt(
+            RobotsTxt = new RobotsTxt(
                 Client.BaseAddress,
                 await ReadResponseAsync("robots.txt"));
-            Console.WriteLine(rt.Allow(new Uri("http://allrecipes.com/test/", UriKind.Absolute)));
-            Console.WriteLine(rt.Allow(new Uri("http://allrecipes.com/My/", UriKind.Absolute)));
         }
 
         private async Task<string> ReadResponseAsync(string path)
