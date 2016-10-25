@@ -25,11 +25,11 @@ namespace RecipeCrawler.Core
 
         public async Task LoadRobotsTxt()
         {
-            RobotsTxt rt = new RobotsTxt(await ReadResponseAsync("robots.txt"));
-            foreach(var path in rt.Disallowed)
-            {
-                Console.WriteLine(path);
-            }
+            RobotsTxt rt = new RobotsTxt(
+                Client.BaseAddress,
+                await ReadResponseAsync("robots.txt"));
+            Console.WriteLine(rt.Allow(new Uri("http://allrecipes.com/test/", UriKind.Absolute)));
+            Console.WriteLine(rt.Allow(new Uri("http://allrecipes.com/My/", UriKind.Absolute)));
         }
 
         private async Task<string> ReadResponseAsync(string path)

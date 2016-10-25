@@ -7,15 +7,38 @@ namespace RecipeCrawler.Core
 {
     public class RobotsTxt
     {
-        public RobotsTxt(string rawFile)
+        public RobotsTxt(Uri host, string rawFile)
         {
             var values = ParseRawFile(rawFile);
             Disallowed = new HashSet<Uri>(values["Disallow"].Select(
-                v => new Uri(v, UriKind.Relative)));
+                v => new Uri(
+                    new Uri($"https://{host.Host}/", UriKind.Absolute),
+                    new Uri(v, UriKind.Relative))));
         }
 
-        public HashSet<Uri> Disallowed { get; } = new HashSet<Uri>();
+        private HashSet<Uri> Disallowed { get; } = new HashSet<Uri>();
 
+        /// <summary>
+        /// Verify if a URI can be accessed according to the robots.txt rules.
+        /// </summary>
+        public bool Allow(Uri uri)
+        {
+            // TODO: validate
+
+            foreach(Uri disallowed in Disallowed)
+            {
+                if (uri.AbsolutePath.StartsWith(
+                    disallowed.AbsolutePath,
+                    StringComparison.OrdinalIgnoreCase)) return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Extracts all values for each key into a dictionary,
+        /// filtering by user agent.
+        /// </summary>
         private Dictionary<string, HashSet<string>> ParseRawFile(string rawFile)
         {
             Dictionary<string, HashSet<string>> values =
