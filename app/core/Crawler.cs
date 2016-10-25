@@ -8,7 +8,7 @@ namespace RecipeCrawler.Core
 {
     public class Crawler
     {
-        private const string CrawlerUserAgent = "RecipeScanner/1.0 rumham.azurewebsites.net";
+        public const string CrawlerUserAgent = "RecipeScanner/1.0 rumham.azurewebsites.net";
 
         public Crawler(Uri uri)
         {
@@ -25,31 +25,10 @@ namespace RecipeCrawler.Core
 
         public async Task LoadRobotsTxt()
         {
-            string content = await ReadResponseAsync("robots.txt");
-            Dictionary<string, HashSet<string>> values =
-                new Dictionary<string, HashSet<string>>(
-                    StringComparer.OrdinalIgnoreCase);
-
-            foreach (string line in content.Split(
-                new[] { Environment.NewLine },
-                StringSplitOptions.RemoveEmptyEntries))
+            RobotsTxt rt = new RobotsTxt(await ReadResponseAsync("robots.txt"));
+            foreach(var path in rt.Disallowed)
             {
-                string[] pair = line.Split(
-                    new[] { ":" },
-                    StringSplitOptions.None);
-                string key = pair[0];
-                string value = pair[1] ?? string.Empty;
-                if (!values.ContainsKey(key))
-                {
-                    values.Add(key, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
-                }
-
-                values[key].Add(value);
-            }
-
-            foreach(var value in values)
-            {
-                Console.WriteLine($"{value.Key}: Count:{value.Value.Count}");
+                Console.WriteLine(path);
             }
         }
 
